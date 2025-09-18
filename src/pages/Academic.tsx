@@ -7,6 +7,7 @@ import { Plus, BookOpen, GraduationCap, Users } from 'lucide-react';
 import CourseManagement from '@/components/academic/CourseManagement';
 import SubjectManagement from '@/components/academic/SubjectManagement';
 import TeacherAssignments from '@/components/academic/TeacherAssignments';
+import ClassManagement from '@/components/academic/ClassManagement';
 
 export default function Academic() {
   const { profile } = useAuth();
@@ -41,7 +42,7 @@ export default function Academic() {
         <div>
           <h1 className="text-3xl font-bold">Academic Management</h1>
           <p className="text-muted-foreground">
-            Manage courses, subjects, and teacher assignments
+            Manage courses, subjects, classes, and teacher assignments
           </p>
         </div>
       </div>
@@ -72,12 +73,12 @@ export default function Academic() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Teacher Assignments</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Classes</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">45</div>
-            <p className="text-xs text-muted-foreground">Subject assignments</p>
+            <div className="text-2xl font-bold">15</div>
+            <p className="text-xs text-muted-foreground">Across all levels</p>
           </CardContent>
         </Card>
       </div>
@@ -92,9 +93,10 @@ export default function Academic() {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="courses">Courses</TabsTrigger>
               <TabsTrigger value="subjects">Subjects</TabsTrigger>
+              <TabsTrigger value="classes">Classes</TabsTrigger>
               <TabsTrigger value="assignments">Teacher Assignments</TabsTrigger>
             </TabsList>
 
@@ -104,6 +106,10 @@ export default function Academic() {
 
             <TabsContent value="subjects" className="mt-6">
               <SubjectManagement canManage={canManage} />
+            </TabsContent>
+
+            <TabsContent value="classes" className="mt-6">
+              <ClassManagement canManage={canManage} />
             </TabsContent>
 
             <TabsContent value="assignments" className="mt-6">
