@@ -23,6 +23,7 @@ interface ParentStudentRelationship {
   created_at: string;
   students?: {
     student_id: string;
+    user_id?: string;
     profiles?: {
       first_name: string;
       last_name: string;
@@ -72,7 +73,8 @@ export default function ParentPortal() {
         .select(`
           *,
           students!inner (
-            student_id
+            student_id,
+            user_id
           )
         `)
         .order('created_at', { ascending: false });
@@ -98,13 +100,32 @@ export default function ParentPortal() {
         .select(`
           id,
           student_id,
-          profiles:user_id (
-            first_name,
-            last_name
-          )
+          user_id
         `)
         .eq('status', 'active')
         .order('student_id');
+
+      if (error) throw error;
+      
+      // Fetch profiles separately
+      const userIds = data?.map(s => s.user_id).filter(Boolean) || [];
+      if (userIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', userIds);
+          
+        if (!profilesError) {
+          const studentsWithProfiles = data?.map(student => ({
+            ...student,
+            profiles: profiles?.find(p => p.id === student.user_id)
+          })) || [];
+          setStudents(studentsWithProfiles);
+          return;
+        }
+      }
+      
+      setStudents(data || []);
 
       if (error) throw error;
       setStudents(data || []);
@@ -152,8 +173,12 @@ export default function ParentPortal() {
         const { error } = await supabase
           .from('parent_student_relationships')
           .insert({
-            ...relationshipData,
-            tenant_id: profile?.tenant_id
+            parent_id: relationshipData.parent_id!,
+            student_id: relationshipData.student_id!,
+            relationship_type: relationshipData.relationship_type!,
+            tenant_id: profile?.tenant_id!,
+            is_primary_contact: relationshipData.is_primary_contact || false,
+            is_emergency_contact: relationshipData.is_emergency_contact || false
           });
 
         if (error) throw error;

@@ -42,12 +42,14 @@ const menuItems = {
     { title: 'Manage Users', url: '/users', icon: Users },
     { title: 'Academic Setup', url: '/dashboard/academic', icon: BookOpen },
     { title: 'Teacher Management', url: '/dashboard/teachers', icon: GraduationCap },
+    { title: 'Student Management', url: '/dashboard/students', icon: Users },
     { title: 'Reports', url: '/reports', icon: FileText },
     { title: 'School Settings', url: '/school-settings', icon: Settings },
   ],
   teacher: [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'My Classes', url: '/classes', icon: BookOpen },
+    { title: 'Students', url: '/dashboard/students', icon: Users },
     { title: 'Gradebook', url: '/gradebook', icon: ClipboardCheck },
     { title: 'Attendance', url: '/attendance', icon: Calendar },
     { title: 'Lesson Plans', url: '/lessons', icon: FileText },
@@ -63,7 +65,7 @@ const menuItems = {
   ],
   staff: [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-    { title: 'Students', url: '/students', icon: GraduationCap },
+    { title: 'Students', url: '/dashboard/students', icon: Users },
     { title: 'Reports', url: '/reports', icon: FileText },
     { title: 'Calendar', url: '/calendar', icon: Calendar },
   ],

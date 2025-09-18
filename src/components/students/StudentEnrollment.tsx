@@ -25,6 +25,7 @@ interface Enrollment {
   payment_status: string;
   students?: {
     student_id: string;
+    user_id?: string;
     profiles?: {
       first_name: string;
       last_name: string;
@@ -55,6 +56,7 @@ interface Class {
 interface Student {
   id: string;
   student_id: string;
+  user_id?: string;
   profiles?: {
     first_name: string;
     last_name: string;
@@ -82,11 +84,7 @@ export default function StudentEnrollment() {
           *,
           students (
             student_id,
-            profiles:user_id (
-              first_name,
-              last_name,
-              email
-            )
+            user_id
           ),
           academic_years (
             year_name
@@ -99,6 +97,28 @@ export default function StudentEnrollment() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      // Fetch profiles separately for students
+      const studentUserIds = data?.map(e => e.students?.user_id).filter(Boolean) || [];
+      if (studentUserIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name, email')
+          .in('id', studentUserIds);
+          
+        if (!profilesError) {
+          const enrollmentsWithProfiles = data?.map(enrollment => ({
+            ...enrollment,
+            students: enrollment.students ? {
+              ...enrollment.students,
+              profiles: profiles?.find(p => p.id === enrollment.students?.user_id)
+            } : undefined
+          })) || [];
+          setEnrollments(enrollmentsWithProfiles);
+          return;
+        }
+      }
+      
       setEnrollments(data || []);
     } catch (error) {
       console.error('Error fetching enrollments:', error);
@@ -149,13 +169,32 @@ export default function StudentEnrollment() {
         .select(`
           id,
           student_id,
-          profiles:user_id (
-            first_name,
-            last_name
-          )
+          user_id
         `)
         .eq('status', 'active')
         .order('student_id');
+
+      if (error) throw error;
+      
+      // Fetch profiles separately
+      const userIds = data?.map(s => s.user_id).filter(Boolean) || [];
+      if (userIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', userIds);
+          
+        if (!profilesError) {
+          const studentsWithProfiles = data?.map(student => ({
+            ...student,
+            profiles: profiles?.find(p => p.id === student.user_id)
+          })) || [];
+          setStudents(studentsWithProfiles);
+          return;
+        }
+      }
+      
+      setStudents(data || []);
 
       if (error) throw error;
       setStudents(data || []);
@@ -191,8 +230,15 @@ export default function StudentEnrollment() {
         const { error } = await supabase
           .from('student_enrollments')
           .insert({
-            ...enrollmentData,
-            tenant_id: profile?.tenant_id,
+            student_id: enrollmentData.student_id!,
+            tenant_id: profile?.tenant_id!,
+            academic_year_id: enrollmentData.academic_year_id,
+            class_id: enrollmentData.class_id,
+            enrollment_date: enrollmentData.enrollment_date!,
+            enrollment_status: enrollmentData.enrollment_status!,
+            fees_paid: enrollmentData.fees_paid || 0,
+            fees_total: enrollmentData.fees_total || 0,
+            payment_status: enrollmentData.payment_status!,
             created_by: profile?.id
           });
 

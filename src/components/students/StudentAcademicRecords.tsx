@@ -28,6 +28,7 @@ interface AcademicRecord {
   teacher_id?: string;
   students?: {
     student_id: string;
+    user_id?: string;
     profiles?: {
       first_name: string;
       last_name: string;
@@ -45,6 +46,7 @@ interface AcademicRecord {
 interface Student {
   id: string;
   student_id: string;
+  user_id?: string;
   profiles?: {
     first_name: string;
     last_name: string;
@@ -83,10 +85,7 @@ export default function StudentAcademicRecords() {
           *,
           students (
             student_id,
-            profiles:user_id (
-              first_name,
-              last_name
-            )
+            user_id
           ),
           subjects (
             subject_name,
@@ -105,6 +104,28 @@ export default function StudentAcademicRecords() {
       const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      // Fetch profiles separately for students
+      const studentUserIds = data?.map(r => r.students?.user_id).filter(Boolean) || [];
+      if (studentUserIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', studentUserIds);
+          
+        if (!profilesError) {
+          const recordsWithProfiles = data?.map(record => ({
+            ...record,
+            students: record.students ? {
+              ...record.students,
+              profiles: profiles?.find(p => p.id === record.students?.user_id)
+            } : undefined
+          })) || [];
+          setRecords(recordsWithProfiles);
+          return;
+        }
+      }
+      
       setRecords(data || []);
     } catch (error) {
       console.error('Error fetching academic records:', error);
@@ -125,13 +146,32 @@ export default function StudentAcademicRecords() {
         .select(`
           id,
           student_id,
-          profiles:user_id (
-            first_name,
-            last_name
-          )
+          user_id
         `)
         .eq('status', 'active')
         .order('student_id');
+
+      if (error) throw error;
+      
+      // Fetch profiles separately
+      const userIds = data?.map(s => s.user_id).filter(Boolean) || [];
+      if (userIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', userIds);
+          
+        if (!profilesError) {
+          const studentsWithProfiles = data?.map(student => ({
+            ...student,
+            profiles: profiles?.find(p => p.id === student.user_id)
+          })) || [];
+          setStudents(studentsWithProfiles);
+          return;
+        }
+      }
+      
+      setStudents(data || []);
 
       if (error) throw error;
       setStudents(data || []);
@@ -194,8 +234,16 @@ export default function StudentAcademicRecords() {
         const { error } = await supabase
           .from('student_academic_records')
           .insert({
-            ...recordData,
-            tenant_id: profile?.tenant_id,
+            student_id: recordData.student_id!,
+            tenant_id: profile?.tenant_id!,
+            academic_year_id: recordData.academic_year_id,
+            subject_id: recordData.subject_id,
+            term: recordData.term!,
+            assignment_scores: recordData.assignment_scores || {},
+            exam_scores: recordData.exam_scores || {},
+            total_score: recordData.total_score,
+            grade: recordData.grade,
+            remarks: recordData.remarks,
             teacher_id: profile?.id
           });
 
@@ -409,11 +457,21 @@ function AcademicRecordDialog({
     const assignments = formData.assignment_scores || {};
     const exams = formData.exam_scores || {};
     
-    const assignmentTotal = Object.values(assignments).reduce((sum: number, score: any) => sum + (parseFloat(String(score)) || 0), 0);
-    const examTotal = Object.values(exams).reduce((sum: number, score: any) => sum + (parseFloat(String(score)) || 0), 0);
+    const assignmentValues = Object.values(assignments);
+    const examValues = Object.values(exams);
+    
+    const assignmentTotal: number = assignmentValues.reduce((sum: number, score: any) => {
+      const numScore = parseFloat(String(score)) || 0;
+      return sum + numScore;
+    }, 0) as number;
+    
+    const examTotal: number = examValues.reduce((sum: number, score: any) => {
+      const numScore = parseFloat(String(score)) || 0;
+      return sum + numScore;
+    }, 0) as number;
     
     // Weighted calculation (assignments 40%, exams 60%)
-    const total = (assignmentTotal * 0.4) + (examTotal * 0.6);
+    const total: number = (assignmentTotal * 0.4) + (examTotal * 0.6);
     const grade = total >= 90 ? 'A' : total >= 80 ? 'B' : total >= 70 ? 'C' : total >= 60 ? 'D' : 'F';
     
     setFormData({

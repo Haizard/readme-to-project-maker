@@ -56,15 +56,7 @@ export default function StudentProfiles() {
       setLoading(true);
       let query = supabase
         .from('students')
-        .select(`
-          *,
-          profiles:user_id (
-            first_name,
-            last_name,
-            email,
-            phone
-          )
-        `);
+        .select('*');
 
       // Apply role-based filtering
       if (profile?.role === 'teacher' || profile?.role === 'staff') {
@@ -74,7 +66,26 @@ export default function StudentProfiles() {
       const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
-      setStudents(data || []);
+      
+      // Fetch profiles separately
+      const userIds = data?.map(s => s.user_id).filter(Boolean) || [];
+      if (userIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name, email, phone')
+          .in('id', userIds);
+          
+        if (!profilesError) {
+          const studentsWithProfiles = data?.map(student => ({
+            ...student,
+            profiles: profiles?.find(p => p.id === student.user_id)
+          })) || [];
+          setStudents(studentsWithProfiles as Student[]);
+          return;
+        }
+      }
+      
+      setStudents((data as Student[]) || []);
     } catch (error) {
       console.error('Error fetching students:', error);
       toast({
@@ -294,7 +305,7 @@ function StudentProfileDialog({ student, isEditing, onSave, onClose }: StudentPr
     onSave(formData);
   };
 
-  const isViewOnly = !isEditing && student;
+  const isViewOnly = !isEditing && !!student;
 
   return (
     <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">

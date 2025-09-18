@@ -25,6 +25,7 @@ interface AttendanceRecord {
   marked_by?: string;
   students?: {
     student_id: string;
+    user_id?: string;
     profiles?: {
       first_name: string;
       last_name: string;
@@ -39,6 +40,7 @@ interface AttendanceRecord {
 interface Student {
   id: string;
   student_id: string;
+  user_id?: string;
   profiles?: {
     first_name: string;
     last_name: string;
@@ -73,10 +75,7 @@ export default function StudentAttendance() {
           *,
           students (
             student_id,
-            profiles:user_id (
-              first_name,
-              last_name
-            )
+            user_id
           ),
           classes (
             class_name,
@@ -95,6 +94,28 @@ export default function StudentAttendance() {
       const { data, error } = await query.order('attendance_date', { ascending: false });
 
       if (error) throw error;
+      
+      // Fetch profiles separately for students
+      const studentUserIds = data?.map(r => r.students?.user_id).filter(Boolean) || [];
+      if (studentUserIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', studentUserIds);
+          
+        if (!profilesError) {
+          const recordsWithProfiles = data?.map(record => ({
+            ...record,
+            students: record.students ? {
+              ...record.students,
+              profiles: profiles?.find(p => p.id === record.students?.user_id)
+            } : undefined
+          })) || [];
+          setAttendanceRecords(recordsWithProfiles);
+          return;
+        }
+      }
+      
       setAttendanceRecords(data || []);
     } catch (error) {
       console.error('Error fetching attendance records:', error);
@@ -115,13 +136,32 @@ export default function StudentAttendance() {
         .select(`
           id,
           student_id,
-          profiles:user_id (
-            first_name,
-            last_name
-          )
+          user_id
         `)
         .eq('status', 'active')
         .order('student_id');
+
+      if (error) throw error;
+      
+      // Fetch profiles separately
+      const userIds = data?.map(s => s.user_id).filter(Boolean) || [];
+      if (userIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', userIds);
+          
+        if (!profilesError) {
+          const studentsWithProfiles = data?.map(student => ({
+            ...student,
+            profiles: profiles?.find(p => p.id === student.user_id)
+          })) || [];
+          setStudents(studentsWithProfiles);
+          return;
+        }
+      }
+      
+      setStudents(data || []);
 
       if (error) throw error;
       setStudents(data || []);
@@ -171,8 +211,14 @@ export default function StudentAttendance() {
         const { error } = await supabase
           .from('student_attendance')
           .insert({
-            ...attendanceData,
-            tenant_id: profile?.tenant_id,
+            student_id: attendanceData.student_id!,
+            tenant_id: profile?.tenant_id!,
+            class_id: attendanceData.class_id,
+            attendance_date: attendanceData.attendance_date!,
+            status: attendanceData.status!,
+            time_in: attendanceData.time_in,
+            time_out: attendanceData.time_out,
+            notes: attendanceData.notes,
             marked_by: profile?.id
           });
 
