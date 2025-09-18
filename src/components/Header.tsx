@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Menu } from "lucide-react";
 
@@ -35,11 +36,11 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="hidden sm:inline-flex">
-              Sign In
+            <Button variant="ghost" className="hidden sm:inline-flex" asChild>
+              <Link to="/auth">Sign In</Link>
             </Button>
-            <Button className="gradient-primary">
-              Start Free Trial
+            <Button className="gradient-primary" asChild>
+              <Link to="/auth">Start Free Trial</Link>
             </Button>
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-5 w-5" />
