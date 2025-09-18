@@ -40,7 +40,7 @@ const menuItems = {
   tenant_admin: [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Manage Users', url: '/users', icon: Users },
-    { title: 'Academic Setup', url: '/academic', icon: BookOpen },
+    { title: 'Academic Setup', url: '/dashboard/academic', icon: BookOpen },
     { title: 'Reports', url: '/reports', icon: FileText },
     { title: 'School Settings', url: '/school-settings', icon: Settings },
   ],

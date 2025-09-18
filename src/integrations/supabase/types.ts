@@ -14,6 +14,70 @@ export type Database = {
   }
   public: {
     Tables: {
+      academic_years: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          end_date: string
+          id: string
+          is_current: boolean | null
+          start_date: string
+          status: string | null
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+          year_name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          end_date: string
+          id?: string
+          is_current?: boolean | null
+          start_date: string
+          status?: string | null
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+          year_name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          end_date?: string
+          id?: string
+          is_current?: boolean | null
+          start_date?: string
+          status?: string | null
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+          year_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academic_years_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "academic_years_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "academic_years_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -57,6 +121,108 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "audit_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_subjects: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          is_required: boolean | null
+          subject_id: string
+          tenant_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          is_required?: boolean | null
+          subject_id: string
+          tenant_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          is_required?: boolean | null
+          subject_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_subjects_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_subjects_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_subjects_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          academic_level: Database["public"]["Enums"]["academic_level"]
+          course_code: string
+          course_name: string
+          created_at: string
+          created_by: string | null
+          credits: number | null
+          description: string | null
+          id: string
+          status: string | null
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          academic_level?: Database["public"]["Enums"]["academic_level"]
+          course_code: string
+          course_name: string
+          created_at?: string
+          created_by?: string | null
+          credits?: number | null
+          description?: string | null
+          id?: string
+          status?: string | null
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          academic_level?: Database["public"]["Enums"]["academic_level"]
+          course_code?: string
+          course_name?: string
+          created_at?: string
+          created_by?: string | null
+          credits?: number | null
+          description?: string | null
+          id?: string
+          status?: string | null
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -113,6 +279,118 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subjects: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          credits: number | null
+          description: string | null
+          id: string
+          status: string | null
+          subject_code: string | null
+          subject_level: Database["public"]["Enums"]["academic_level"]
+          subject_name: string
+          subject_type: Database["public"]["Enums"]["subject_type"]
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          credits?: number | null
+          description?: string | null
+          id?: string
+          status?: string | null
+          subject_code?: string | null
+          subject_level?: Database["public"]["Enums"]["academic_level"]
+          subject_name: string
+          subject_type?: Database["public"]["Enums"]["subject_type"]
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          credits?: number | null
+          description?: string | null
+          id?: string
+          status?: string | null
+          subject_code?: string | null
+          subject_level?: Database["public"]["Enums"]["academic_level"]
+          subject_name?: string
+          subject_type?: Database["public"]["Enums"]["subject_type"]
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subjects_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_subjects: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          subject_id: string
+          teacher_id: string
+          tenant_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          subject_id: string
+          teacher_id: string
+          tenant_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          subject_id?: string
+          teacher_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_subjects_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_subjects_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_subjects_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_subjects_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -177,7 +455,9 @@ export type Database = {
       }
     }
     Enums: {
+      academic_level: "Primary" | "O-Level" | "A-Level" | "University"
       app_role: "super_admin" | "tenant_admin" | "teacher" | "student" | "staff"
+      subject_type: "Core" | "Optional" | "Combination"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -305,7 +585,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      academic_level: ["Primary", "O-Level", "A-Level", "University"],
       app_role: ["super_admin", "tenant_admin", "teacher", "student", "staff"],
+      subject_type: ["Core", "Optional", "Combination"],
     },
   },
 } as const

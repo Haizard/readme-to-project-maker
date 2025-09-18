@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "@/components/auth/AuthPage";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import Academic from "./pages/Academic";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
+              <Route path="academic" element={<Academic />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
