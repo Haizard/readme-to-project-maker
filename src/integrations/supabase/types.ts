@@ -128,6 +128,80 @@ export type Database = {
           },
         ]
       }
+      classes: {
+        Row: {
+          academic_year_id: string | null
+          capacity: number | null
+          class_level: Database["public"]["Enums"]["academic_level"]
+          class_name: string
+          created_at: string
+          created_by: string | null
+          id: string
+          section: string | null
+          status: string | null
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          academic_year_id?: string | null
+          capacity?: number | null
+          class_level?: Database["public"]["Enums"]["academic_level"]
+          class_name: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          section?: string | null
+          status?: string | null
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          academic_year_id?: string | null
+          capacity?: number | null
+          class_level?: Database["public"]["Enums"]["academic_level"]
+          class_name?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          section?: string | null
+          status?: string | null
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_subjects: {
         Row: {
           course_id: string
@@ -335,6 +409,288 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "subjects_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_classes: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          assignment_type: string
+          class_id: string
+          id: string
+          subject_id: string | null
+          teacher_id: string
+          tenant_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          assignment_type?: string
+          class_id: string
+          id?: string
+          subject_id?: string | null
+          teacher_id: string
+          tenant_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          assignment_type?: string
+          class_id?: string
+          id?: string
+          subject_id?: string | null
+          teacher_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_classes_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_classes_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_classes_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_classes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_evaluations: {
+        Row: {
+          academic_year_id: string | null
+          classroom_management: number | null
+          comments: string | null
+          created_at: string
+          evaluation_period: string
+          evaluator_id: string
+          id: string
+          overall_rating: number | null
+          professional_development: number | null
+          recommendations: string | null
+          status: string | null
+          teacher_id: string
+          teaching_effectiveness: number | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          academic_year_id?: string | null
+          classroom_management?: number | null
+          comments?: string | null
+          created_at?: string
+          evaluation_period: string
+          evaluator_id: string
+          id?: string
+          overall_rating?: number | null
+          professional_development?: number | null
+          recommendations?: string | null
+          status?: string | null
+          teacher_id: string
+          teaching_effectiveness?: number | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          academic_year_id?: string | null
+          classroom_management?: number | null
+          comments?: string | null
+          created_at?: string
+          evaluation_period?: string
+          evaluator_id?: string
+          id?: string
+          overall_rating?: number | null
+          professional_development?: number | null
+          recommendations?: string | null
+          status?: string | null
+          teacher_id?: string
+          teaching_effectiveness?: number | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_evaluations_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_evaluations_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_evaluations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_leaves: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          days_requested: number
+          end_date: string
+          id: string
+          leave_type: string
+          reason: string | null
+          start_date: string
+          status: string | null
+          teacher_id: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          days_requested: number
+          end_date: string
+          id?: string
+          leave_type: string
+          reason?: string | null
+          start_date: string
+          status?: string | null
+          teacher_id: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          days_requested?: number
+          end_date?: string
+          id?: string
+          leave_type?: string
+          reason?: string | null
+          start_date?: string
+          status?: string | null
+          teacher_id?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_leaves_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_leaves_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_leaves_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_qualifications: {
+        Row: {
+          certificate_number: string | null
+          created_at: string
+          expiry_date: string | null
+          id: string
+          institution: string | null
+          qualification_name: string
+          qualification_type: string
+          status: string | null
+          teacher_id: string
+          tenant_id: string
+          updated_at: string
+          year_obtained: number | null
+        }
+        Insert: {
+          certificate_number?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          institution?: string | null
+          qualification_name: string
+          qualification_type: string
+          status?: string | null
+          teacher_id: string
+          tenant_id: string
+          updated_at?: string
+          year_obtained?: number | null
+        }
+        Update: {
+          certificate_number?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          institution?: string | null
+          qualification_name?: string
+          qualification_type?: string
+          status?: string | null
+          teacher_id?: string
+          tenant_id?: string
+          updated_at?: string
+          year_obtained?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_qualifications_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_qualifications_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"

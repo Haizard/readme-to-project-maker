@@ -41,6 +41,7 @@ const menuItems = {
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
     { title: 'Manage Users', url: '/users', icon: Users },
     { title: 'Academic Setup', url: '/dashboard/academic', icon: BookOpen },
+    { title: 'Teacher Management', url: '/dashboard/teachers', icon: GraduationCap },
     { title: 'Reports', url: '/reports', icon: FileText },
     { title: 'School Settings', url: '/school-settings', icon: Settings },
   ],
