@@ -11,6 +11,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import Academic from "./pages/Academic";
 import Teachers from "./pages/Teachers";
+import Students from "./pages/Students";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="academic" element={<Academic />} />
               <Route path="teachers" element={<Teachers />} />
+              <Route path="students" element={<Students />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
